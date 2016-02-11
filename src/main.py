@@ -30,6 +30,21 @@ def plot_a_prescriptions(a_prescriptions=A_PRESCRIPTIONS,
                          k_range=K_RANGE,
                          valence_space=VALENCE_SPACE,
                          v0=V0, hw=HW, t2=T2):
+    """For each A-prescription, plot the difference between the energy based on
+    the effective Hamiltonian generated from the A prescription and the energy
+    based on the exact Hamiltonian.
+    Note: k represents the actual mass number (i.e. the number of ones in the
+    state vector), while a represents that used in the Hamiltonian
+    :param a_prescriptions: A list of functions that take an actual mass
+    number and produce the first three A values from it
+    :param k_range: The range of ACTUAL mass numbers for which to evaluate the
+    energy difference.
+    :param valence_space: The range of values over which to evaluate the
+    effective Hamiltonian
+    :param v0: v0
+    :param hw: hw
+    :param t2: T2
+    """
     plots = list()
     for ap in a_prescriptions:
         x = list()
@@ -59,13 +74,14 @@ def plot_a_prescriptions(a_prescriptions=A_PRESCRIPTIONS,
             y.append(e_eff - e_exact)
         plots.append((x, y, const_list, const_dict))
 
-    plot_the_plots(plots, label='{a}',
-                   title=('Ground state toy model energies calculated for '
-                          'different A prescriptions'),
-                   xlabel='Number of particles',
-                   ylabel='E_valence - E_exact',
-                   get_label_kwargs=lambda plot, i: {'a': plot[3]['presc']},
-                   include_legend=True)
+    return plot_the_plots(
+        plots, label='{a}',
+        title=('Ground state toy model energies calculated for '
+               'different A prescriptions'),
+        xlabel='Number of particles',
+        ylabel='E_valence - E_exact',
+        get_label_kwargs=lambda plot, i: {'a': plot[3]['presc']},
+        include_legend=True)
 
 plot_a_prescriptions()
 plt.show()

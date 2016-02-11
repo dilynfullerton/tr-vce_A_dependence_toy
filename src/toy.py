@@ -41,6 +41,8 @@ def _n_i(i):
 
 
 class HamiltonianToy(_Hamiltonian):
+    """Toy model Hamiltonian to be applied to occupation state vectors
+    """
     def __init__(self, a, v0=1, t_i=_t_i, t_ij=_t_ij, n_i=_n_i, hw=1, t2=0):
         self.a = a
         self.v0 = v0
@@ -69,6 +71,8 @@ class HamiltonianToy(_Hamiltonian):
 
 
 class HamiltonianToyEffective(_Hamiltonian):
+    """Effective Hamiltonian for the toy model based on an A-prescription
+    """
     def __init__(self, e_core, e_p, v_eff, valence_space):
         self.e_core = e_core
         self.e_p = e_p
@@ -99,6 +103,7 @@ class HamiltonianToyEffective(_Hamiltonian):
         return s0 + s1 + s2
 
 
+# A prescriptions
 def get_a_exact(a):
     return (a,) * 3 + ('A_eff = A',)
 
