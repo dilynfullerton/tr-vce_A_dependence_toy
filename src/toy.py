@@ -31,6 +31,7 @@ def _t_i(i, n, hw):
     return (n(i) + 3/2) * hw
 
 
+# noinspection PyUnusedLocal
 def _t_ij(i, j, t2=0):
     return t2
 
@@ -103,6 +104,7 @@ def get_a_exact(a):
 
 
 def custom_a_prescription(a, b, c):
+    # noinspection PyUnusedLocal
     def get_a_custom(x):
         tup = (a, b, c)
         return tup + ('A_eff = {}'.format(tup),)

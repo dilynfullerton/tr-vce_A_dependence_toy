@@ -11,6 +11,7 @@ from toy import get_a_exact as exact
 from toy import custom_a_prescription as custom
 
 path.append(b'/Users/Alpha/workspace/TRIUMF/imsrg_mass_plots/src')
+# noinspection PyPep8,PyUnresolvedReferences
 from plotting import plot_the_plots
 
 A_PRESCRIPTIONS = [exact,
