@@ -83,12 +83,12 @@ class OccupationNumber:
             raise ModelSpaceTooSmallException(
                 'Cannot create a particle in state i = {}. Model space is '
                 'limited to i in \{1, 2, ...{}\}.'.format(i, len(self.occ)))
-        elif self.occ[i] == 1:
+        elif self[i] == 1:
             return OccupationNumber(n_max=self.n_max,
                                     a=self.a,
                                     occupied=self.occ,
                                     scalar=0)
-        elif self.occ[i] == 0:
+        elif self[i] == 0:
             next_occ = list(self.occ)
             next_occ[i] = 1
             return OccupationNumber(n_max=self.n_max,
@@ -102,12 +102,12 @@ class OccupationNumber:
                 ('Cannot create a particle in state i = {}.'.format(i) +
                  ' Model space is limited to i in {1, 2, ...' +
                  '{}'.format(len(self))) + '}.')
-        elif self.occ[i] == 0:
+        elif self[i] == 0:
             return OccupationNumber(n_max=self.n_max,
                                     a=self.a,
                                     occupied=self.occ,
                                     scalar=0)
-        elif self.occ[i] == 1:
+        elif self[i] == 1:
             next_occ = list(self.occ)
             next_occ[i] = 0
             return OccupationNumber(n_max=self.n_max,
