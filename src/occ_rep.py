@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 
 class OccupationNumber:
-    def __init__(self, n_max, a, occupied=None, scalar=1):
+    def __init__(self, n_max=0, a=0, occupied=None, scalar=1):
         self.n_max = n_max
         self.scalar = scalar
         self.a = a
@@ -12,16 +12,23 @@ class OccupationNumber:
         if self.occ is None:
             self.occ = [-1] + [1] * self.a + [0] * n_max  # ground state
         else:
+            self.a = len(filter(lambda x: x == 1, self.occ))
             self.occ = self.occ + [0] * (self.n_max + self.a - len(self.occ))
+            if self.occ[0] != -1:
+                self.occ = [-1] + self.occ
 
     def __len__(self):
         return len(self.occ) - 1
+
+    def __getitem__(self, item):
+        return self.occ[item]
 
     def __add__(self, other):
         return self.__radd__(other)
 
     def __radd__(self, other):
-        if other == 0 or other.scalar == 0:
+        if (other == 0 or
+                (isinstance(other, OccupationNumber) and other.scalar == 0)):
             return self
         elif self.scalar == 0:
             return other
@@ -33,6 +40,12 @@ class OccupationNumber:
                                     a=self.a,
                                     occupied=self.occ,
                                     scalar=self.scalar + other.scalar)
+
+    def __sub__(self, other):
+        return self.__add__(-1 * other)
+
+    def __rsub__(self, other):
+        return -1 * self.__sub__(other)
 
     def __mul__(self, other):
         return self.__rmul__(other)

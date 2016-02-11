@@ -6,191 +6,104 @@ from itertools import combinations
 
 from occ_rep import FermionAnnihilationOperator
 from occ_rep import OccupationNumber
-
-DEGENERACY = [2, 4, 2, 6, 2, 4, 8, 4, 6, 2, 10, 6, 8, 2, 4]
-
-
-def _t_i(i, hw):
-    return (_n(i) + 1.5) * hw
+from occ_rep import ModelSpaceTooSmallException
 
 
-def _n(i):
-    n = 0
-    k = 0
-    while True:
-        for j in range(2 * (n + 1) ** 2):  # DEGENERACY[n]): #2 * (2 * n + 1)):
-            if k >= i - 1:
-                return n
-            k += 1
+class _Hamiltonian(object):
+    def __call__(self, state):
+        self._operate_on(state)
+
+    def _operate_on(self, state):
+        raise NotImplemented()
+
+    def energy(self, state):
+        es = self._operate_on(state)
+        if es == 0:
+            return 0
         else:
-            n += 1
+            return es.scalar
+
+    def ground_state_energy(self, k, n_max=0):
+        return self.energy(OccupationNumber(occupied=[1]*k, n_max=n_max))
 
 
-# noinspection PyUnusedLocal
-def _t_ij(i, j):
-    return 0
+def _t_i(i, n, hw):
+    return (n(i) + 3/2) * hw
 
 
-# noinspection PyPep8Naming
-class HamiltonianToyModel:
-    """Representation of the Hamiltonian for the toy model
-    """
+def _t_ij(i, j, t2=0):
+    return t2
 
-    def __init__(self, A, v0, hw=1,
-                 t_i=_t_i, t_ij=_t_ij, A_c=None, A_v=None, get_A_fn=None,
-                 core_size=2):
-        """Initialize the representation of the Hamiltonian
-        :param A: The A value for use in calculations
-        :param v0: The v0 value
-        :param hw: The hw frequency level, default 1 (relative)
-        :param t_i: The method for weighting the single particle energy levels
-        given occupation index i
-        :param t_ij: The method for weighting particle-particle interactions
-        given occupation numbers i and j
-        :param A_c: The A value for use in calculating core energy
-        :param A_v: The A value for use in calculating valence (single particle)
-        energy
-        :param core_size: The size of the core
-        """
-        self.A = A
-        self.A_c = A_c
-        self.A_v = A_v
-        if get_A_fn is not None:
-            self.A_c, self.A_v, self.A = get_A_fn(A)
+
+def _n_i(i):
+    return 0 if i <= 2 else 1  # todo figure out correct form
+
+
+class HamiltonianToy(_Hamiltonian):
+    def __init__(self, a, v0=1, t_i=_t_i, t_ij=_t_ij, n_i=_n_i, hw=1, t2=0):
+        self.a = a
         self.v0 = v0
+        self._t_i = t_i
+        self._t_ij = t_ij
+        self._n_i = n_i
         self.hw = hw
-        self.t_i = t_i
-        self.t_ij = t_ij
-        self.core_size = core_size
+        self._t2 = t2
 
-    def __call__(self, occ_num):
-        """Apply the Hamiltonian to a state vector in OccupationNumber
-        representation
-        :return: The OccupationNumber representation of the results of applying
-        the Hamiltonian to the given state vector
-        """
-        core = self.core(occ_num)
-        single_particle = self.single_particle(occ_num)
-        interaction = self.interactions(occ_num)
-        return (core + single_particle + interaction,
-                core, single_particle, interaction)
-
-    def core(self, occ_num):
+    def _operate_on(self, state):
+        k = len(state)
         s = 0
-        for i in range(1, self.core_size + 1):
+        for i in range(1, k + 1):
             ai = FermionAnnihilationOperator(i)
-            aii = ai.adjoint()
-            if s == 0:
-                s = aii(ai(occ_num)) * self.t_i(i, self.hw)
-            else:
-                s += aii(ai(occ_num)) * self.t_i(i, self.hw)
-        return s * (1 - 1 / self.A_c)
-
-    def single_particle(self, occ_num):
-        s = 0
-        for i in range(self.core_size + 1, len(occ_num) + 1):
+            ai_ = ai.adjoint()
+            s += self._t_i(i=i, n=self._n_i, hw=self.hw) * ai_(ai(state))
+        s *= (1 - 1 / self.a)
+        for i, j in combinations(range(1, k + 1), 2):
             ai = FermionAnnihilationOperator(i)
-            aii = ai.adjoint()
-            if s == 0:
-                s = aii(ai(occ_num)) * self.t_i(i, self.hw)
-            else:
-                s += aii(ai(occ_num)) * self.t_i(i, self.hw)
-        return s * (1 - 1 / self.A_v)
-
-    def interactions(self, occ_num):
-        s = 0
-        for i, j in combinations(range(1,
-                                       len(occ_num) + 1), 2):
-            ai = FermionAnnihilationOperator(i)
+            ai_ = ai.adjoint()
             aj = FermionAnnihilationOperator(j)
-            aii = ai.adjoint()
-            ajj = aj.adjoint()
-            if s == 0:
-                s = (aii(ajj(aj(ai(occ_num)))) *
-                     (self.v0 - self.t_ij(i, j) / self.A))
-            else:
-                s += (aii(ajj(aj(ai(occ_num)))) *
-                      (self.v0 - self.t_ij(i, j) / self.A))
+            aj_ = aj.adjoint()
+            s += ((self.v0 - self._t_ij(i, j, t2=self._t2) / self.a) *
+                  ai_(aj_(aj(ai(state)))))
         return s
 
 
-def e(n, hamiltonian, n_max, _idx=0):
-    """Given a Hamiltonian (HamiltonianToyModel), and an n-value, calculate
-    the ground state energy En for an n-body system
-    :param _idx:
-    :param n: The size of the system
-    :param hamiltonian: The Hamiltonian to apply to the system
-    :param n_max: The maximum size of the system
-    :return: A scalar value representing the energy
-    """
-    state = OccupationNumber(n_max=n_max, a=n)
-    eig = hamiltonian(state)[_idx]
-    if eig == 0:
-        return eig
-    else:
-        return eig.scalar
+class HamiltonianToyEffective(_Hamiltonian):
+    def __init__(self, e_core, e_p, v_eff, valence_space):
+        self.e_core = e_core
+        self.e_p = e_p
+        self.v_eff = v_eff
+        self.valence_space = valence_space
+
+    def _operate_on(self, state):
+        s0 = self.e_core * state
+        s1 = 0
+        for p in self.valence_space:
+            ap = FermionAnnihilationOperator(p)
+            ap_ = ap.adjoint()
+            try:
+                s1 += self.e_p * ap_(ap(state))
+            except ModelSpaceTooSmallException:
+                continue
+        s2 = 0
+        for p, q in combinations(self.valence_space, 2):
+            ap = FermionAnnihilationOperator(p)
+            ap_ = ap.adjoint()
+            aq = FermionAnnihilationOperator(q)
+            aq_ = aq.adjoint()
+            try:
+                s2 += ap_(aq_(aq(ap(state))))
+            except ModelSpaceTooSmallException:
+                continue
+        s2 *= self.v_eff
+        return s0 + s1 + s2
 
 
-class HamiltonianEffectiveVCE:
-    def __init__(self, hamiltonian, e_core=None, e_step=None, v_eff=None,
-                 core_size=2):
-        self.h = hamiltonian
-        self.A = self.h.A
-        self.core_size = core_size
-        self.e_core_fn = e_core
-        self.e_step_fn = e_step
-        self.v_eff_fn = v_eff
-        if self.e_core_fn is None:
-            def e_c(n_max):
-                return e(2, self.h, n_max=n_max)
+def get_a_exact(a):
+    return (a,) * 3 + ('A_eff = A',)
 
-            self.e_core_fn = e_c
-        if self.e_step_fn is None:
-            def e_st(n_max):
-                return e(3, self.h, n_max=n_max) - e(2, self.h, n_max=n_max)
 
-            self.e_step_fn = e_st
-        if self.v_eff_fn is None:
-            def vf(n_max):
-                return (e(4, self.h, n_max=n_max) -
-                        e(3, self.h, n_max=n_max) -
-                        self.e_step_fn(n_max))
-
-            self.v_eff_fn = vf
-
-    def __call__(self, occ_num):
-        core = self.core(occ_num)
-        single_particle = self.single_particle(occ_num)
-        interaction = self.interactions(occ_num)
-        return (core + single_particle + interaction,
-                core, single_particle, interaction)
-
-    def core(self, occ_num):
-        return occ_num * self.e_core_fn(occ_num.n_max)
-
-    def single_particle(self, occ_num):
-        s = 0
-        for p in range(self.core_size + 1, len(occ_num) + 1):
-            a_p = FermionAnnihilationOperator(p)
-            a_pi = a_p.adjoint()
-            sp = a_pi(a_p(occ_num)) * self.e_step_fn(n_max=occ_num.n_max)
-            if s == 0:
-                s = sp
-            else:
-                s += sp
-        return s
-
-    def interactions(self, occ_num):
-        s = 0
-        for p, q in combinations(range(self.core_size + 1, len(occ_num) + 1),
-                                 2):
-            a_p = FermionAnnihilationOperator(p)
-            a_pi = a_p.adjoint()
-            a_q = FermionAnnihilationOperator(q)
-            a_qi = a_q.adjoint()
-            sp = a_pi(a_qi(a_q(a_p(occ_num))))
-            if s == 0:
-                s = sp
-            else:
-                s += sp
-        return self.v_eff_fn(n_max=occ_num.n_max) * s
+def custom_a_prescription(a, b, c):
+    def get_a_custom(x):
+        tup = (a, b, c)
+        return tup + ('A_eff = {}'.format(tup),)
+    return get_a_custom
