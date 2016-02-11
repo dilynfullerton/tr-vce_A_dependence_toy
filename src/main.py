@@ -6,7 +6,8 @@ from sys import path
 
 from matplotlib import pyplot as plt
 
-from toy import HamiltonianToy, HamiltonianToyEffective
+from toy import HamiltonianToy as H
+from toy import HamiltonianToyEffective as H_eff
 from toy import get_a_exact as exact
 from toy import custom_a_prescription as custom
 
@@ -38,9 +39,9 @@ def plot_a_prescriptions(a_prescriptions=A_PRESCRIPTIONS,
         for k in k_range:
             a2, a3, a4, ap_name = ap(k)
 
-            h2 = HamiltonianToy(a2, v0=v0, hw=hw, t2=t2)
-            h3 = HamiltonianToy(a3, v0=v0, hw=hw, t2=t2)
-            h4 = HamiltonianToy(a4, v0=v0, hw=hw, t2=t2)
+            h2 = H(a2, v0=v0, hw=hw, t2=t2)
+            h3 = H(a3, v0=v0, hw=hw, t2=t2)
+            h4 = H(a4, v0=v0, hw=hw, t2=t2)
 
             e2 = h2.ground_state_energy(valence_space[0] - 1)
             e3 = h3.ground_state_energy(valence_space[0])
@@ -49,9 +50,8 @@ def plot_a_prescriptions(a_prescriptions=A_PRESCRIPTIONS,
             e_core = e2
             e_p = e3 - e2
             v_eff = e4 - 2 * e3 + e2
-            h_eff = HamiltonianToyEffective(e_core, e_p, v_eff,
-                                            valence_space=valence_space)
-            h_exact = HamiltonianToy(a=k, v0=v0, hw=hw, t2=t2)
+            h_eff = H_eff(e_core, e_p, v_eff, valence_space=valence_space)
+            h_exact = H(a=k, v0=v0, hw=hw, t2=t2)
             e_eff = h_eff.ground_state_energy(k)
             e_exact = h_exact.ground_state_energy(k)
 
