@@ -80,6 +80,13 @@ class OccupationNumber:
         else:
             return self.scalar == 0 and other == 0
 
+    def _phase_factor(self, i):
+        phase = 1
+        for j in range(1, i):
+            if self[j] == 1:
+                phase *= -1
+        return phase
+
     def create(self, i):
         if i > len(self):
             raise ModelSpaceTooSmallException(
@@ -96,7 +103,7 @@ class OccupationNumber:
             return OccupationNumber(n_max=self.n_max,
                                     a=self.a+1,
                                     occupied=next_occ,
-                                    scalar=self.scalar)
+                                    scalar=self.scalar*self._phase_factor(i))
 
     def annihilate(self, i):
         if i > len(self):
@@ -115,7 +122,7 @@ class OccupationNumber:
             return OccupationNumber(n_max=self.n_max,
                                     a=self.a-1,
                                     occupied=next_occ,
-                                    scalar=self.scalar)
+                                    scalar=self.scalar*self._phase_factor(i))
 
 
 class CannotAddOccupationNumbersException(Exception):

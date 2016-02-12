@@ -75,9 +75,13 @@ def plot_a_prescriptions(a_prescriptions=A_PRESCRIPTIONS,
         plots.append((x, y, const_list, const_dict))
 
     return plot_the_plots(
-        plots, label='{a}',
+        plots,
+        sort_key=lambda plot: plot[3]['presc'],
+        sort_reverse=True,
+        label='{a}',
         title=('Ground state toy model energies calculated for '
-               'different A prescriptions'),
+               'different A prescriptions;\nv0={}, hw={}, T2={}'
+               ''.format(v0, hw, t2)),
         xlabel='Number of particles',
         ylabel='E_valence - E_exact',
         get_label_kwargs=lambda plot, i: {'a': plot[3]['presc']},
