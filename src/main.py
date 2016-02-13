@@ -3,6 +3,8 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from sys import path
+from itertools import combinations_with_replacement
+from itertools import permutations
 
 from matplotlib import pyplot as plt
 
@@ -87,5 +89,18 @@ def plot_a_prescriptions(a_prescriptions=A_PRESCRIPTIONS,
         get_label_kwargs=lambda plot, i: {'a': plot[3]['presc']},
         include_legend=True)
 
+
+def permutations_with_replacement(iterable, r):
+    combos = combinations_with_replacement(iterable, r)
+    perms = list()
+    for c in combos:
+        perms.extend(permutations(c, r))
+    return set(perms)
+
+
+# for hw, t2 in reversed(sorted(permutations_with_replacement(range(5), 2))):
+#     if hw == 0:
+#         continue
+#     plot_a_prescriptions(hw=hw, t2=t2)
 plot_a_prescriptions()
 plt.show()
