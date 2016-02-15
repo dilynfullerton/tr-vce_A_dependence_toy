@@ -105,12 +105,13 @@ class HamiltonianToyEffective(_Hamiltonian):
 
 # A prescriptions
 def get_a_exact(a):
-    return (a,) * 3 + ('A_eff = A',)
+    return (a,) * 3 + ('A_eff = A', '$A_{\mathrm{eff}} = A$',)
 
 
 def custom_a_prescription(a, b, c):
     # noinspection PyUnusedLocal
     def get_a_custom(x):
         tup = (a, b, c)
-        return tup + ('A_eff = {}'.format(tup),)
+        return tup + ('A_eff = {}'.format(tup),
+                      '$A_{\mathrm{eff}} =' + ' {}$'.format(tup),)
     return get_a_custom

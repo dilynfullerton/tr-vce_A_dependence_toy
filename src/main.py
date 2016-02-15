@@ -26,12 +26,14 @@ VALENCE_SPACE = range(5, 18)
 HW = 1
 V0 = 1
 T2 = 0
+LATEX = True
 
 
 def plot_a_prescriptions(a_prescriptions=A_PRESCRIPTIONS,
                          k_range=K_RANGE,
                          valence_space=VALENCE_SPACE,
-                         v0=V0, hw=HW, t2=T2):
+                         v0=V0, hw=HW, t2=T2,
+                         use_latex=LATEX):
     """For each A-prescription, plot the difference between the energy based on
     the effective Hamiltonian generated from the A prescription and the energy
     based on the exact Hamiltonian.
@@ -52,9 +54,12 @@ def plot_a_prescriptions(a_prescriptions=A_PRESCRIPTIONS,
         x = list()
         y = list()
         const_list = list()
-        const_dict = {'presc': ap(0)[3]}
+        if not use_latex:
+            const_dict = {'presc': ap(0)[3]}
+        else:
+            const_dict = {'presc': ap(0)[4]}
         for k in k_range:
-            a2, a3, a4, ap_name = ap(k)
+            a2, a3, a4 = ap(k)[:3]
 
             h2 = H(a2, v0=v0, hw=hw, t2=t2)
             h3 = H(a3, v0=v0, hw=hw, t2=t2)
@@ -73,19 +78,33 @@ def plot_a_prescriptions(a_prescriptions=A_PRESCRIPTIONS,
             e_exact = h_exact.ground_state_energy(k)
 
             x.append(k)
-            y.append(e_eff - e_exact)
+            y.append((e_eff - e_exact) / hw)
         plots.append((x, y, const_list, const_dict))
+
+    if not use_latex:
+        title = ('Ground state toy model energies calculated for '
+                 'different A prescriptions;'
+                 '\nv_0={}, hw={}, T2={}'
+                 ''.format(v0, hw, t2))
+        xlabel = 'Number of particles, A'
+        ylabel = '(E_valence - E_exact) / hw'
+    else:
+        title = ('Ground state toy model energies calculated for '
+                 'different A prescriptions;'
+                 '\n$v_0={}, \\hbar\\omega={}, T_2={}$'
+                 ''.format(v0, hw, t2))
+        xlabel = 'Number of particles, $A$'
+        ylabel = ('$(E_{\\mathrm{valence}} - E_{\\mathrm{exact}}) / '
+                  '\\hbar\\omega$')
 
     return plot_the_plots(
         plots,
         sort_key=lambda plot: plot[3]['presc'],
         sort_reverse=True,
         label='{a}',
-        title=('Ground state toy model energies calculated for '
-               'different A prescriptions;\nv0={}, hw={}, T2={}'
-               ''.format(v0, hw, t2)),
-        xlabel='Number of particles',
-        ylabel='E_valence - E_exact',
+        title=title,
+        xlabel=xlabel,
+        ylabel=ylabel,
         get_label_kwargs=lambda plot, i: {'a': plot[3]['presc']},
         include_legend=True)
 
