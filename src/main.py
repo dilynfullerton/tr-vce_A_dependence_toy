@@ -72,7 +72,8 @@ def plot_a_prescriptions(a_prescriptions=A_PRESCRIPTIONS,
             e_core = e2
             e_p = e3 - e2
             v_eff = e4 - 2 * e3 + e2
-            h_eff = H_eff(e_core, e_p, v_eff, valence_space=valence_space)
+            h_eff = H_eff(e_core=e_core, e_p=e_p, v_eff=v_eff,
+                          valence_space=valence_space)
             h_exact = H(a=k, v0=v0, hw=hw, t2=t2)
             e_eff = h_eff.ground_state_energy(k)
             e_exact = h_exact.ground_state_energy(k)
