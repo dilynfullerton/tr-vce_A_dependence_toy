@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 from itertools import combinations
 
 from occ_rep import FermionAnnihilationOperator
-from occ_rep import OccupationNumber
+from occ_rep import FermionOccupationNumber
 from occ_rep import ModelSpaceTooSmallException
 
 
@@ -24,7 +24,7 @@ class _Hamiltonian(object):
             return es.scalar
 
     def ground_state_energy(self, k, n_max=0):
-        return self.energy(OccupationNumber(occupied=[1]*k, n_max=n_max))
+        return self.energy(FermionOccupationNumber(occupied=[1] * k, n_max=n_max))
 
 
 def _t_i(i, n, hw):

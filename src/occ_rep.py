@@ -3,7 +3,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 
-class OccupationNumber:
+class FermionOccupationNumber:
     """A representation of an OccupationNumber state vector
     """
     def __init__(self, n_max=0, a=0, occupied=None, scalar=1):
@@ -30,7 +30,7 @@ class OccupationNumber:
 
     def __radd__(self, other):
         if (other == 0 or
-                (isinstance(other, OccupationNumber) and other.scalar == 0)):
+                (isinstance(other, FermionOccupationNumber) and other.scalar == 0)):
             return self
         elif self.scalar == 0:
             return other
@@ -38,10 +38,10 @@ class OccupationNumber:
             raise CannotAddOccupationNumbersException(
                 'Cannot add occupation states {} and {}'.format(self, other))
         else:
-            return OccupationNumber(n_max=self.n_max,
-                                    a=self.a,
-                                    occupied=self.occ,
-                                    scalar=self.scalar + other.scalar)
+            return FermionOccupationNumber(n_max=self.n_max,
+                                           a=self.a,
+                                           occupied=self.occ,
+                                           scalar=self.scalar + other.scalar)
 
     def __sub__(self, other):
         return self.__add__(-1 * other)
@@ -53,10 +53,10 @@ class OccupationNumber:
         return self.__rmul__(other)
 
     def __rmul__(self, other):
-        return OccupationNumber(n_max=self.n_max,
-                                a=self.a,
-                                occupied=self.occ,
-                                scalar=self.scalar*other)
+        return FermionOccupationNumber(n_max=self.n_max,
+                                       a=self.a,
+                                       occupied=self.occ,
+                                       scalar=self.scalar*other)
 
     def __str__(self):
         s = self.scalar
@@ -72,7 +72,7 @@ class OccupationNumber:
         return iter(list(self.occ[1:]))
 
     def __eq__(self, other):
-        if isinstance(other, OccupationNumber):
+        if isinstance(other, FermionOccupationNumber):
             if self.scalar == 0:
                 return 0 == other.scalar
             else:
@@ -93,17 +93,17 @@ class OccupationNumber:
                 'Cannot create a particle in state i = {}. Model space is '
                 'limited to i in \{1, 2, ...{}\}.'.format(i, len(self.occ)))
         elif self[i] == 1:
-            return OccupationNumber(n_max=self.n_max,
-                                    a=self.a,
-                                    occupied=self.occ,
-                                    scalar=0)
+            return FermionOccupationNumber(n_max=self.n_max,
+                                           a=self.a,
+                                           occupied=self.occ,
+                                           scalar=0)
         elif self[i] == 0:
             next_occ = list(self.occ)
             next_occ[i] = 1
-            return OccupationNumber(n_max=self.n_max,
-                                    a=self.a+1,
-                                    occupied=next_occ,
-                                    scalar=self.scalar*self._phase_factor(i))
+            return FermionOccupationNumber(n_max=self.n_max,
+                                           a=self.a+1,
+                                           occupied=next_occ,
+                                           scalar=self.scalar*self._phase_factor(i))
 
     def annihilate(self, i):
         if i > len(self):
@@ -112,17 +112,17 @@ class OccupationNumber:
                  ' Model space is limited to i in {1, 2, ...' +
                  '{}'.format(len(self))) + '}.')
         elif self[i] == 0:
-            return OccupationNumber(n_max=self.n_max,
-                                    a=self.a,
-                                    occupied=self.occ,
-                                    scalar=0)
+            return FermionOccupationNumber(n_max=self.n_max,
+                                           a=self.a,
+                                           occupied=self.occ,
+                                           scalar=0)
         elif self[i] == 1:
             next_occ = list(self.occ)
             next_occ[i] = 0
-            return OccupationNumber(n_max=self.n_max,
-                                    a=self.a-1,
-                                    occupied=next_occ,
-                                    scalar=self.scalar*self._phase_factor(i))
+            return FermionOccupationNumber(n_max=self.n_max,
+                                           a=self.a-1,
+                                           occupied=next_occ,
+                                           scalar=self.scalar*self._phase_factor(i))
 
 
 class CannotAddOccupationNumbersException(Exception):
