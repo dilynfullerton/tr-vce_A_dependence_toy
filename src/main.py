@@ -20,9 +20,13 @@ from plotting import plot_the_plots
 A_PRESCRIPTIONS = [exact,
                    custom(4, 5, 6),
                    custom(6, 6, 6)
+                   # custom(2, 3, 4),
+                   # custom(4, 4, 4)
                    ]
 K_RANGE = range(4, 17)
+# K_RANGE = range(2, 17)
 VALENCE_SPACE = range(5, 18)
+# VALENCE_SPACE = range(3, 18)
 HW = 1
 V0 = 1
 T2 = 0
@@ -61,13 +65,13 @@ def plot_a_prescriptions(a_prescriptions=A_PRESCRIPTIONS,
         for k in k_range:
             a2, a3, a4 = ap(k)[:3]
 
-            h2 = H(a2, v0=v0, hw=hw, t2=t2)
-            h3 = H(a3, v0=v0, hw=hw, t2=t2)
-            h4 = H(a4, v0=v0, hw=hw, t2=t2)
+            h2 = H(a=a2, v0=v0, hw=hw, t2=t2)
+            h3 = H(a=a3, v0=v0, hw=hw, t2=t2)
+            h4 = H(a=a4, v0=v0, hw=hw, t2=t2)
 
-            e2 = h2.ground_state_energy(valence_space[0] - 1)
-            e3 = h3.ground_state_energy(valence_space[0])
-            e4 = h4.ground_state_energy(valence_space[0] + 1)
+            e2 = h2.ground_state_energy(k=valence_space[0]-1)
+            e3 = h3.ground_state_energy(k=valence_space[0])
+            e4 = h4.ground_state_energy(k=valence_space[0]+1)
 
             e_core = e2
             e_p = e3 - e2
@@ -79,7 +83,10 @@ def plot_a_prescriptions(a_prescriptions=A_PRESCRIPTIONS,
             e_exact = h_exact.ground_state_energy(k)
 
             x.append(k)
-            y.append((e_eff - e_exact) / hw)
+            if hw != 0:
+                y.append((e_eff - e_exact) / hw)
+            else:
+                y.append((e_eff - e_exact))
         plots.append((x, y, const_list, const_dict))
 
     if not use_latex:
@@ -107,7 +114,9 @@ def plot_a_prescriptions(a_prescriptions=A_PRESCRIPTIONS,
         xlabel=xlabel,
         ylabel=ylabel,
         get_label_kwargs=lambda plot, i: {'a': plot[3]['presc']},
-        include_legend=True)
+        include_legend=True,
+        cmap='jet',
+        dark=False)
 
 
 def permutations_with_replacement(iterable, r):
@@ -118,9 +127,7 @@ def permutations_with_replacement(iterable, r):
     return set(perms)
 
 
-# for hw, t2 in reversed(sorted(permutations_with_replacement(range(5), 2))):
-#     if hw == 0:
-#         continue
-#     plot_a_prescriptions(hw=hw, t2=t2)
-plot_a_prescriptions()
+for t2 in reversed(sorted(permutations_with_replacement(range(6), 1))):
+    plot_a_prescriptions(t2=t2[0])
+# plot_a_prescriptions()
 plt.show()
