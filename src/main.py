@@ -36,7 +36,7 @@ LATEX = True
 def plot_a_prescriptions(a_prescriptions=A_PRESCRIPTIONS,
                          k_range=K_RANGE,
                          valence_space=VALENCE_SPACE,
-                         v0=V0, hw=HW, t2=T2,
+                         v0=V0, hw=HW, t_core=0, t_mix=0, t_val=0,
                          use_latex=LATEX):
     """For each A-prescription, plot the difference between the energy based on
     the effective Hamiltonian generated from the A prescription and the energy
@@ -65,9 +65,12 @@ def plot_a_prescriptions(a_prescriptions=A_PRESCRIPTIONS,
         for k in k_range:
             a2, a3, a4 = ap(k)[:3]
 
-            h2 = H(a=a2, v0=v0, hw=hw, t2=t2)
-            h3 = H(a=a3, v0=v0, hw=hw, t2=t2)
-            h4 = H(a=a4, v0=v0, hw=hw, t2=t2)
+            h2 = H(a=a2, v0=v0, hw=hw, valence_space=valence_space,
+                   t_core=t_core, t_mix=t_mix, t_val=t_val)
+            h3 = H(a=a3, v0=v0, hw=hw, valence_space=valence_space,
+                   t_core=t_core, t_mix=t_mix, t_val=t_val)
+            h4 = H(a=a4, v0=v0, hw=hw, valence_space=valence_space,
+                   t_core=t_core, t_mix=t_mix, t_val=t_val)
 
             e2 = h2.ground_state_energy(k=valence_space[0]-1)
             e3 = h3.ground_state_energy(k=valence_space[0])
@@ -78,7 +81,8 @@ def plot_a_prescriptions(a_prescriptions=A_PRESCRIPTIONS,
             v_eff = e4 - 2 * e3 + e2
             h_eff = H_eff(e_core=e_core, e_p=e_p, v_eff=v_eff,
                           valence_space=valence_space)
-            h_exact = H(a=k, v0=v0, hw=hw, t2=t2)
+            h_exact = H(a=k, v0=v0, hw=hw, valence_space=valence_space,
+                        t_core=t_core, t_mix=t_mix, t_val=t_val)
             e_eff = h_eff.ground_state_energy(k)
             e_exact = h_exact.ground_state_energy(k)
 
@@ -92,15 +96,15 @@ def plot_a_prescriptions(a_prescriptions=A_PRESCRIPTIONS,
     if not use_latex:
         title = ('Ground state toy model energies calculated for '
                  'different A prescriptions;'
-                 '\nv_0={}, hw={}, T2={}'
-                 ''.format(v0, hw, t2))
+                 '\nv_0={}, hw={}, T={}'
+                 ''.format(v0, hw, (t_core, t_mix, t_val)))
         xlabel = 'Number of particles, A'
         ylabel = '(E_valence - E_exact) / hw'
     else:
         title = ('Ground state toy model energies calculated for '
                  'different A prescriptions;'
-                 '\n$v_0={}, \\hbar\\omega={}, T_2={}$'
-                 ''.format(v0, hw, t2))
+                 '\n$v_0={}, \\hbar\\omega={}, T={}$'
+                 ''.format(v0, hw, (t_core, t_mix, t_val)))
         xlabel = 'Number of particles, $A$'
         ylabel = ('$(E_{\\mathrm{valence}} - E_{\\mathrm{exact}}) / '
                   '\\hbar\\omega$')
@@ -126,8 +130,6 @@ def permutations_with_replacement(iterable, r):
         perms.extend(permutations(c, r))
     return set(perms)
 
-
-for t2 in reversed(sorted(permutations_with_replacement(range(6), 1))):
-    plot_a_prescriptions(t2=t2[0])
-# plot_a_prescriptions()
-plt.show()
+for t_core, t_mix, t_val in sorted(permutations_with_replacement(range(3), 3)):
+    plot_a_prescriptions(t_core=t_core, t_mix=t_mix, t_val=t_val)
+    plt.show()

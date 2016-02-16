@@ -32,8 +32,13 @@ def _t_i(i, n, hw):
 
 
 # noinspection PyUnusedLocal
-def _t_ij(i, j, t2=0):
-    return t2
+def _t_ij(i, j, t_core, t_mix, t_val, valence_space):
+    if j not in valence_space:
+        return t_core
+    elif i not in valence_space:
+        return t_mix
+    else:
+        return t_val
 
 
 def _n_i(i):
@@ -43,14 +48,18 @@ def _n_i(i):
 class HamiltonianToy(_Hamiltonian):
     """Toy model Hamiltonian to be applied to occupation state vectors
     """
-    def __init__(self, a, v0=1, t_i=_t_i, t_ij=_t_ij, n_i=_n_i, hw=1, t2=0):
+    def __init__(self, a, v0, hw, valence_space, t_i=_t_i, t_ij=_t_ij, n_i=_n_i,
+                 t_core=0, t_mix=0, t_val=0):
         self.a = a
         self.v0 = v0
+        self.hw = hw
+        self.valence = valence_space
         self._t_i = t_i
         self._t_ij = t_ij
         self._n_i = n_i
-        self.hw = hw
-        self._t2 = t2
+        self._t_core = t_core
+        self._t_mix = t_mix
+        self._t_val = t_val
 
     def _operate_on(self, state):
         k = len(state)
@@ -65,8 +74,12 @@ class HamiltonianToy(_Hamiltonian):
             ai_ = ai.adjoint()
             aj = FermionAnnihilationOperator(j)
             aj_ = aj.adjoint()
-            s += ((self.v0 - self._t_ij(i, j, t2=self._t2) / self.a) *
-                  ai_(aj_(aj(ai(state)))))
+            tij = self._t_ij(i=i, j=j,
+                             t_core=self._t_core,
+                             t_mix=self._t_mix,
+                             t_val=self._t_val,
+                             valence_space=self.valence)
+            s += ((self.v0 - tij / self.a) * ai_(aj_(aj(ai(state)))))
         return s
 
 
