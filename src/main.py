@@ -77,9 +77,9 @@ def plot_a_prescriptions(a_prescriptions=A_PRESCRIPTIONS,
             h4 = H_ex(a=a4, v0=v0, hw=hw, valence_space=valence_space,
                       t_core=t_core, t_mix=t_mix, t_val=t_val)
 
-            e2 = h2.ground_state_energy(k=valence_space[0]-1)
+            e2 = h2.ground_state_energy(k=valence_space[0] - 1)
             e3 = h3.ground_state_energy(k=valence_space[0])
-            e4 = h4.ground_state_energy(k=valence_space[0]+1)
+            e4 = h4.ground_state_energy(k=valence_space[0] + 1)
 
             e_core = e2
             e_p = e3 - e2
@@ -134,6 +134,7 @@ def permutations_with_replacement(iterable, r):
     for c in combos:
         perms.extend(permutations(c, r))
     return set(perms)
+
 
 for t1, t2, t3 in sorted(permutations_with_replacement(range(2), 3)):
     plot_a_prescriptions(t_core=t1, t_mix=t2, t_val=t3)
