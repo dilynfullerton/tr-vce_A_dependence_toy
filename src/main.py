@@ -3,12 +3,11 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from sys import path
-from itertools import combinations_with_replacement
-from itertools import permutations
+from itertools import combinations_with_replacement, permutations
 
 from matplotlib import pyplot as plt
 
-from toy import HamiltonianToy as H
+from toy import HamiltonianToy as H_ex
 from toy import HamiltonianToyEffective as H_eff
 from toy import get_a_exact as exact
 from toy import custom_a_prescription as custom
@@ -29,20 +28,27 @@ VALENCE_SPACE = range(5, 18)
 # VALENCE_SPACE = range(3, 18)
 HW = 1
 V0 = 1
-T2 = 0
+T_2 = 0
+T_CORE = T_2
+T_MIX = T_2
+T_VAL = T_2
 LATEX = True
 
 
 def plot_a_prescriptions(a_prescriptions=A_PRESCRIPTIONS,
                          k_range=K_RANGE,
                          valence_space=VALENCE_SPACE,
-                         v0=V0, hw=HW, t_core=0, t_mix=0, t_val=0,
+                         v0=V0, hw=HW, t_core=T_CORE, t_mix=T_MIX, t_val=T_VAL,
                          use_latex=LATEX):
     """For each A-prescription, plot the difference between the energy based on
     the effective Hamiltonian generated from the A prescription and the energy
     based on the exact Hamiltonian.
     Note: k represents the actual mass number (i.e. the number of ones in the
     state vector), while a represents that used in the Hamiltonian
+    :param use_latex:
+    :param t_val:
+    :param t_mix:
+    :param t_core:
     :param a_prescriptions: A list of functions that take an actual mass
     number and produce the first three A values from it
     :param k_range: The range of ACTUAL mass numbers for which to evaluate the
@@ -51,7 +57,6 @@ def plot_a_prescriptions(a_prescriptions=A_PRESCRIPTIONS,
     effective Hamiltonian
     :param v0: v0
     :param hw: hw
-    :param t2: T2
     """
     plots = list()
     for ap in a_prescriptions:
@@ -65,12 +70,12 @@ def plot_a_prescriptions(a_prescriptions=A_PRESCRIPTIONS,
         for k in k_range:
             a2, a3, a4 = ap(k)[:3]
 
-            h2 = H(a=a2, v0=v0, hw=hw, valence_space=valence_space,
-                   t_core=t_core, t_mix=t_mix, t_val=t_val)
-            h3 = H(a=a3, v0=v0, hw=hw, valence_space=valence_space,
-                   t_core=t_core, t_mix=t_mix, t_val=t_val)
-            h4 = H(a=a4, v0=v0, hw=hw, valence_space=valence_space,
-                   t_core=t_core, t_mix=t_mix, t_val=t_val)
+            h2 = H_ex(a=a2, v0=v0, hw=hw, valence_space=valence_space,
+                      t_core=t_core, t_mix=t_mix, t_val=t_val)
+            h3 = H_ex(a=a3, v0=v0, hw=hw, valence_space=valence_space,
+                      t_core=t_core, t_mix=t_mix, t_val=t_val)
+            h4 = H_ex(a=a4, v0=v0, hw=hw, valence_space=valence_space,
+                      t_core=t_core, t_mix=t_mix, t_val=t_val)
 
             e2 = h2.ground_state_energy(k=valence_space[0]-1)
             e3 = h3.ground_state_energy(k=valence_space[0])
@@ -81,8 +86,8 @@ def plot_a_prescriptions(a_prescriptions=A_PRESCRIPTIONS,
             v_eff = e4 - 2 * e3 + e2
             h_eff = H_eff(e_core=e_core, e_p=e_p, v_eff=v_eff,
                           valence_space=valence_space)
-            h_exact = H(a=k, v0=v0, hw=hw, valence_space=valence_space,
-                        t_core=t_core, t_mix=t_mix, t_val=t_val)
+            h_exact = H_ex(a=k, v0=v0, hw=hw, valence_space=valence_space,
+                           t_core=t_core, t_mix=t_mix, t_val=t_val)
             e_eff = h_eff.ground_state_energy(k)
             e_exact = h_exact.ground_state_energy(k)
 
@@ -130,6 +135,6 @@ def permutations_with_replacement(iterable, r):
         perms.extend(permutations(c, r))
     return set(perms)
 
-for t_core, t_mix, t_val in sorted(permutations_with_replacement(range(3), 3)):
-    plot_a_prescriptions(t_core=t_core, t_mix=t_mix, t_val=t_val)
+for t1, t2, t3 in sorted(permutations_with_replacement(range(2), 3)):
+    plot_a_prescriptions(t_core=t1, t_mix=t2, t_val=t3)
     plt.show()

@@ -24,11 +24,12 @@ class _Hamiltonian(object):
             return es.scalar
 
     def ground_state_energy(self, k, n_max=0):
-        return self.energy(FermionOccupationNumber(occupied=[1] * k, n_max=n_max))
+        return self.energy(
+            FermionOccupationNumber(occupied=[1] * k, n_max=n_max))
 
 
 def _t_i(i, n, hw):
-    return (n(i) + 3/2) * hw
+    return (n(i) + 3 / 2) * hw
 
 
 # noinspection PyUnusedLocal
@@ -48,6 +49,7 @@ def _n_i(i):
 class HamiltonianToy(_Hamiltonian):
     """Toy model Hamiltonian to be applied to occupation state vectors
     """
+
     def __init__(self, a, v0, hw, valence_space, t_i=_t_i, t_ij=_t_ij, n_i=_n_i,
                  t_core=0, t_mix=0, t_val=0):
         self.a = a
@@ -86,6 +88,7 @@ class HamiltonianToy(_Hamiltonian):
 class HamiltonianToyEffective(_Hamiltonian):
     """Effective Hamiltonian for the toy model based on an A-prescription
     """
+
     def __init__(self, e_core, e_p, v_eff, valence_space):
         self.e_core = e_core
         self.e_p = e_p
@@ -127,4 +130,5 @@ def custom_a_prescription(a, b, c):
         tup = (a, b, c)
         return tup + ('A_eff = {}'.format(tup),
                       '$A_{\mathrm{eff}} =' + ' {}$'.format(tup),)
+
     return get_a_custom

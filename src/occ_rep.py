@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 class FermionOccupationNumber:
     """A representation of an OccupationNumber state vector
     """
+
     def __init__(self, n_max=0, a=0, occupied=None, scalar=1):
         self.n_max = n_max
         self.scalar = scalar
@@ -29,19 +30,27 @@ class FermionOccupationNumber:
         return self.__radd__(other)
 
     def __radd__(self, other):
-        if (other == 0 or
-                (isinstance(other, FermionOccupationNumber) and other.scalar == 0)):
+        if other == 0:
             return self
-        elif self.scalar == 0:
-            return other
-        elif self.occ != other.occ:
-            raise CannotAddOccupationNumbersException(
-                'Cannot add occupation states {} and {}'.format(self, other))
+        elif isinstance(other, FermionOccupationNumber):
+            if other.scalar == 0:
+                return self
+            elif self.scalar == 0:
+                return other
+            elif self.occ != other.occ:
+                raise CannotAddOccupationNumbersException(
+                    'Cannot add occupation states {} and {}'
+                    ''.format(self, other))
+            else:
+                return FermionOccupationNumber(
+                    n_max=self.n_max,
+                    a=self.a,
+                    occupied=self.occ,
+                    scalar=self.scalar + other.scalar)
         else:
-            return FermionOccupationNumber(n_max=self.n_max,
-                                           a=self.a,
-                                           occupied=self.occ,
-                                           scalar=self.scalar + other.scalar)
+            raise CannotAddOccupationNumbersException(
+                'Cannot add occupation state {} to {}'
+                ''.format(self, other))
 
     def __sub__(self, other):
         return self.__add__(-1 * other)
@@ -56,7 +65,7 @@ class FermionOccupationNumber:
         return FermionOccupationNumber(n_max=self.n_max,
                                        a=self.a,
                                        occupied=self.occ,
-                                       scalar=self.scalar*other)
+                                       scalar=self.scalar * other)
 
     def __str__(self):
         s = self.scalar
@@ -100,10 +109,11 @@ class FermionOccupationNumber:
         elif self[i] == 0:
             next_occ = list(self.occ)
             next_occ[i] = 1
-            return FermionOccupationNumber(n_max=self.n_max,
-                                           a=self.a+1,
-                                           occupied=next_occ,
-                                           scalar=self.scalar*self._phase_factor(i))
+            return FermionOccupationNumber(
+                n_max=self.n_max,
+                a=self.a + 1,
+                occupied=next_occ,
+                scalar=self.scalar * self._phase_factor(i))
 
     def annihilate(self, i):
         if i > len(self):
@@ -119,10 +129,11 @@ class FermionOccupationNumber:
         elif self[i] == 1:
             next_occ = list(self.occ)
             next_occ[i] = 0
-            return FermionOccupationNumber(n_max=self.n_max,
-                                           a=self.a-1,
-                                           occupied=next_occ,
-                                           scalar=self.scalar*self._phase_factor(i))
+            return FermionOccupationNumber(
+                n_max=self.n_max,
+                a=self.a - 1,
+                occupied=next_occ,
+                scalar=self.scalar * self._phase_factor(i))
 
 
 class CannotAddOccupationNumbersException(Exception):
@@ -148,6 +159,7 @@ class FermionCreationOperator(_FermionCAOperator):
     """A creation operator, which may be applied to an occupation state vector
     in an appropriately sized model space
     """
+
     def __init__(self, i):
         super(FermionCreationOperator,
               self).__init__(i, FermionAnnihilationOperator)
@@ -160,6 +172,7 @@ class FermionAnnihilationOperator(_FermionCAOperator):
     """An annihilation operator, which may be applied to an occupation state vector
     in an appropriately sized model space
     """
+
     def __init__(self, i):
         super(FermionAnnihilationOperator,
               self).__init__(i, FermionCreationOperator)
