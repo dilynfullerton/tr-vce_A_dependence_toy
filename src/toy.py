@@ -42,15 +42,30 @@ def _t_ij(i, j, t_core, t_mix, t_val, valence_space):
         return t_val
 
 
-def _n_i(i):
-    return 0 if i <= 2 else 1  # todo figure out correct form
+# def _n_i(i):
+#     return 0 if i <= 2 else 1  
+
+def get_n_i_fn(n_component):
+    def _n_i(i):
+        nj = 0
+        for j in range(i):
+            while (nj + 2) * (nj + 1) * nj * n_component / 3 <= j:
+                nj += 1
+        nj -= 1
+        return nj
+    return _n_i
+
+# n_i = get_n_i_fn(2)
+# for i in range(1, 20):
+#     print('n{:2} = {}'.format(i, n_i(i)))
 
 
 class HamiltonianToy(_Hamiltonian):
     """Toy model Hamiltonian to be applied to occupation state vectors
     """
 
-    def __init__(self, a, v0, hw, valence_space, t_i=_t_i, t_ij=_t_ij, n_i=_n_i,
+    def __init__(self, a, v0, hw, valence_space, t_i=_t_i, t_ij=_t_ij,
+                 n_i=get_n_i_fn, n_component=1,
                  t_core=0, t_mix=0, t_val=0):
         self.a = a
         self.v0 = v0
@@ -58,7 +73,7 @@ class HamiltonianToy(_Hamiltonian):
         self.valence = valence_space
         self._t_i = t_i
         self._t_ij = t_ij
-        self._n_i = n_i
+        self._n_i = n_i(n_component)
         self._t_core = t_core
         self._t_mix = t_mix
         self._t_val = t_val
