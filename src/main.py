@@ -17,17 +17,22 @@ from toy import custom_a_prescription as custom
 path.extend([b'../../imsrg_mass_plots/src'])
 # noinspection PyPep8,PyUnresolvedReferences
 from plotting import plot_the_plots
+from constants import LEGEND_SIZE
 
-A_PRESCRIPTIONS = [exact,
-                   custom(4, 5, 6),
-                   custom(6, 6, 6),
-                   # custom(6, 7, 8),
-                   # custom(7, 7, 8),
-                   # custom(7, 7, 7),
-                   custom(6.81, 7.17, 7.57)
-                   # custom(2, 3, 4),
-                   # custom(4, 4, 4)
-                   ]
+A_PRESCRIPTIONS = [
+    exact,
+    custom(4, 5, 6),
+    custom(6, 6, 6),
+    custom(4.57, 4.75, 4.86),  # Optimized numbers for T2=-1
+    custom(6.81, 7.17, 7.57),  # Optimized numbers for T2=[-5,0]
+    custom(6.81, 7.16, 7.56),  # Optimized numbers for T2=[-10,0]
+    custom(6.79, 7.14, 7.54),  # Optimized numbers for T2=[-20,0]
+    # custom(6, 7, 8),
+    # custom(7, 7, 8),
+    # custom(7, 7, 7),
+    # custom(2, 3, 4),
+    # custom(4, 4, 4)
+    ]
 N_SHELL = 1
 N_COMPONENT = 2
 K0 = int((N_SHELL + 2) * (N_SHELL + 1) * N_SHELL / 3 * N_COMPONENT)
@@ -40,17 +45,25 @@ HW = 1.0
 V0 = 1.0
 T_2 = 0.0
 T_CORE = 0.0
-T_MIX = -.3
+T_MIX = -2.0
 T_VAL = 0.0
 LATEX = False
+# SAVEDIR = b'../../3679406mjsmbs/dilyn/figures'
+SAVEDIR = b'../plots'
+LEGEND_SIZE.space_scale = 2.5
 
 
-def plot_a_prescriptions(a_prescriptions=A_PRESCRIPTIONS,
-                         k_range=K_RANGE,
-                         valence_space=VALENCE_SPACE,
-                         v0=V0, hw=HW, t_core=T_CORE, t_mix=T_MIX, t_val=T_VAL,
-                         n_component=N_COMPONENT,
-                         use_latex=LATEX):
+def plot_a_prescriptions(
+        a_prescriptions=A_PRESCRIPTIONS,
+        k_range=K_RANGE,
+        valence_space=VALENCE_SPACE,
+        v0=V0, hw=HW,
+        t_core=T_CORE, t_mix=T_MIX, t_val=T_VAL,
+        n_component=N_COMPONENT,
+        use_latex=LATEX,
+        savedir=SAVEDIR,
+        savename='{c}{t}',
+        legend_size=LEGEND_SIZE):
     """For each A-prescription, plot the difference between the energy based on
     the effective Hamiltonian generated from the A prescription and the energy
     based on the exact Hamiltonian.
@@ -90,18 +103,13 @@ def plot_a_prescriptions(a_prescriptions=A_PRESCRIPTIONS,
                 y.append(err)
         plots.append((x, y, const_list, const_dict))
 
+    title = ('Ground state toy model energies;'
+             ' v_0={}, hw={}, T={}'
+             ''.format(v0, hw, (t_core, t_mix, t_val)))
     if not use_latex:
-        title = ('Ground state toy model energies calculated for '
-                 'different A prescriptions;'
-                 '\nv_0={}, hw={}, T={}'
-                 ''.format(v0, hw, (t_core, t_mix, t_val)))
         xlabel = 'Number of particles, A'
         ylabel = '(E_valence - E_exact) / hw'
     else:
-        title = ('Ground state toy model energies calculated for '
-                 'different A prescriptions;'
-                 '\n$v_0={}, \\hbar\\omega={}, T={}$'
-                 ''.format(v0, hw, (t_core, t_mix, t_val)))
         xlabel = 'Number of particles, $A$'
         ylabel = ('$(E_{\\mathrm{valence}} - E_{\\mathrm{exact}}) / '
                   '\\hbar\\omega$')
@@ -116,8 +124,13 @@ def plot_a_prescriptions(a_prescriptions=A_PRESCRIPTIONS,
         ylabel=ylabel,
         get_label_kwargs=lambda plot, i: {'a': plot[3]['presc']},
         include_legend=True,
+        legend_size=legend_size,
         cmap='jet',
-        dark=False)
+        savedir=savedir,
+        savename=savename,
+        dark=False,
+        extension='.pdf',
+    )
 
 
 def e_eff_error_array(a_prescription, k_range, valence_space, n_component,
@@ -179,15 +192,18 @@ def permutations_with_replacement(iterable, r):
     return set(perms)
 
 
-# for t1, t2, t3 in reversed(sorted(permutations_with_replacement(range(3), 3))):
+# for t1, t2, t3 in sorted(permutations_with_replacement(range(-1, 2), 3)):
 #     plot_a_prescriptions(t_core=t1, t_mix=t2, t_val=t3)
-plot_a_prescriptions(t_core=T_CORE, t_mix=T_MIX, t_val=T_VAL)
-# for tt2 in np.linspace(-5.0, 0.0, 11):
-#     plot_a_prescriptions(t_mix=tt2)
+
+# plot_a_prescriptions(t_core=T_CORE, t_mix=T_MIX, t_val=T_VAL)
+
+for tt2 in np.linspace(-5.0, 0.0, 21):
+    plot_a_prescriptions(t_mix=tt2)
 plt.show()
 
 # params_range = list()
-# for t2 in np.linspace(-5.0, 0.0, 11):
+# for t2 in np.linspace(-20.0, 0.0, 41):
+# # for t2 in [-2.0]:
 #     params_range.append((K_RANGE, VALENCE_SPACE, N_COMPONENT,
 #                          V0, HW, T_CORE, t2, T_VAL))
 # res = leastsq(func=e_eff_error_arrays, x0=np.array([1.0, 1.0, 1.0]),

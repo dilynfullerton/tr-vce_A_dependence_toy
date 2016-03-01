@@ -43,7 +43,7 @@ def _t_ij(i, j, t_core, t_mix, t_val, valence_space):
 
 
 # def _n_i(i):
-#     return 0 if i <= 2 else 1  
+#     return 0 if i <= 2 else 1
 
 def get_n_i_fn(n_component):
     def _n_i(i):
@@ -55,8 +55,10 @@ def get_n_i_fn(n_component):
         return nj
     return _n_i
 
-# n_i = get_n_i_fn(2)
-# for i in range(1, 20):
+# N_SHELL = 1
+# N_COMPONENT = 2
+# n_i = get_n_i_fn(N_COMPONENT)
+# for i in range(1, int(1 + (N_SHELL + 3) * (N_SHELL + 2) * (N_SHELL + 1) / 3 * N_COMPONENT)):
 #     print('n{:2} = {}'.format(i, n_i(i)))
 
 

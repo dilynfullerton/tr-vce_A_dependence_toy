@@ -1,4 +1,6 @@
+/plots
 /old
 .idea/
 *.pyc
 /misc
+.DS_Store
