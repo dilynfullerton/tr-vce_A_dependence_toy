@@ -42,9 +42,6 @@ def _t_ij(i, j, t_core, t_mix, t_val, valence_space):
         return t_val
 
 
-# def _n_i(i):
-#     return 0 if i <= 2 else 1
-
 def get_n_i_fn(n_component):
     def _n_i(i):
         nj = 0
@@ -55,11 +52,11 @@ def get_n_i_fn(n_component):
         return nj
     return _n_i
 
-# N_SHELL = 1
-# N_COMPONENT = 2
-# n_i = get_n_i_fn(N_COMPONENT)
-# for i in range(1, int(1 + (N_SHELL + 3) * (N_SHELL + 2) * (N_SHELL + 1) / 3 * N_COMPONENT)):
-#     print('n{:2} = {}'.format(i, n_i(i)))
+
+def get_n_i_fn0(n_component):
+    def _n_i(i):
+        return 0
+    return _n_i
 
 
 class HamiltonianToy(_Hamiltonian):
@@ -68,7 +65,9 @@ class HamiltonianToy(_Hamiltonian):
 
     def __init__(self, a, v0, hw, valence_space, t_i=_t_i, t_ij=_t_ij,
                  n_i=get_n_i_fn, n_component=1,
-                 t_core=0, t_mix=0, t_val=0):
+                 t_cc=0, t_cv=0, t_vv=0,
+                 include1body=True,
+                 include2body=True):
         self.a = a
         self.v0 = v0
         self.hw = hw
@@ -76,29 +75,33 @@ class HamiltonianToy(_Hamiltonian):
         self._t_i = t_i
         self._t_ij = t_ij
         self._n_i = n_i(n_component)
-        self._t_core = t_core
-        self._t_mix = t_mix
-        self._t_val = t_val
+        self._t_cc = t_cc
+        self._t_cv = t_cv
+        self._t_vv = t_vv
+        self._incl1 = include1body
+        self._incl2 = include2body
 
     def _operate_on(self, state):
         k = len(state)
         s = 0
-        for i in range(1, k + 1):
-            ai = FermionAnnihilationOperator(i)
-            ai_ = ai.adjoint()
-            s += self._t_i(i=i, n=self._n_i, hw=self.hw) * ai_(ai(state))
-        s *= (1 - 1 / self.a)
-        for i, j in combinations(range(1, k + 1), 2):
-            ai = FermionAnnihilationOperator(i)
-            ai_ = ai.adjoint()
-            aj = FermionAnnihilationOperator(j)
-            aj_ = aj.adjoint()
-            tij = self._t_ij(i=i, j=j,
-                             t_core=self._t_core,
-                             t_mix=self._t_mix,
-                             t_val=self._t_val,
-                             valence_space=self.valence)
-            s += ((self.v0 - tij / self.a) * ai_(aj_(aj(ai(state)))))
+        if self._incl1:
+            for i in range(1, k + 1):
+                ai = FermionAnnihilationOperator(i)
+                ai_ = ai.adjoint()
+                s += self._t_i(i=i, n=self._n_i, hw=self.hw) * ai_(ai(state))
+            s *= (1 - 1 / self.a)
+        if self._incl2:
+            for i, j in combinations(range(1, k + 1), 2):
+                ai = FermionAnnihilationOperator(i)
+                ai_ = ai.adjoint()
+                aj = FermionAnnihilationOperator(j)
+                aj_ = aj.adjoint()
+                tij = self._t_ij(i=i, j=j,
+                                 t_core=self._t_cc,
+                                 t_mix=self._t_cv,
+                                 t_val=self._t_vv,
+                                 valence_space=self.valence)
+                s += ((self.v0 - tij / self.a) * ai_(aj_(aj(ai(state)))))
         return s
 
 
@@ -145,7 +148,8 @@ def custom_a_prescription(a, b, c):
     # noinspection PyUnusedLocal
     def get_a_custom(x):
         tup = (a, b, c)
-        return tup + ('A_eff = {}'.format(tup),
-                      '$A_{\mathrm{eff}} =' + ' {}$'.format(tup),)
+        return tup + ('A_eff = ({:.2f}, {:.2f}, {:.2f})'.format(*tup),
+                      '$A_{\mathrm{eff}} =' +
+                      ' ({:.2f}, {:.2f}, {:.2f})$'.format(*tup),)
 
     return get_a_custom

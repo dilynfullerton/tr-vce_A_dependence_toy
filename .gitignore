@@ -1,6 +1,9 @@
+/mcalc/templates/TBMEA2srg-n3lo2.0_15.24
+/mcalc/results
 /plots
 /old
 .idea/
 *.pyc
 /misc
 .DS_Store
+/mcalc/scripts/__init__.py
