@@ -63,11 +63,11 @@ def run(fname, n1, n2, f_out_name=None):
     return 1
 
 
-if len(argv) >= 4:
-    fname0 = argv[1]
-    n1_0, n2_0 = [int(x) for x in argv[2:4]]
-    if len(argv) >= 5:
-        f_out_name0 = argv[4]
-    else:
-        f_out_name0 = None
-    run(fname=fname0, n1=n1_0, n2=n2_0, f_out_name=f_out_name0)
+# if len(argv) >= 4:
+#     fname0 = argv[1]
+#     n1_0, n2_0 = [int(x) for x in argv[2:4]]
+#     if len(argv) >= 5:
+#         f_out_name0 = argv[4]
+#     else:
+#         f_out_name0 = None
+#     run(fname=fname0, n1=n1_0, n2=n2_0, f_out_name=f_out_name0)
