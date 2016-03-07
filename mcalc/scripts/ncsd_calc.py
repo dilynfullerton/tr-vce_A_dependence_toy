@@ -477,5 +477,12 @@ def ncsd_vce_calculation(a_prescription, aeff_range=list(),
     return 1
 
 
+def ncsd_vce_calculations(a_prescriptions, aeff_range, **kwargs):
+    for presc in a_prescriptions:
+        ncsd_vce_calculation(a_prescription=presc, aeff_range=aeff_range,
+                             **kwargs)
+
+
 # SCRIPT
-ncsd_vce_calculation(a_prescription=(4, 5, 6), aeff_range=range(4, 17), nhw=4)
+ncsd_vce_calculations(a_prescriptions=[(4, 5, 6), (6, 6, 6)],
+                      aeff_range=range(4, 17), nhw=6)
