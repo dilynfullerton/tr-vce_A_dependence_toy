@@ -492,6 +492,7 @@ def _force_from_argv0(argv0):
     if len(argv0) == 0:
         return (False,) * 4
     elif 'f' in argv0:
+        force_ncsd, force_trdens, force_vce = (False,) * 3
         if 'fn' in argv0:
             force_ncsd = True
         if 'ft' in argv0:
