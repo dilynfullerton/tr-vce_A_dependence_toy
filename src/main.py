@@ -58,52 +58,50 @@ LEGEND_SIZE.space_scale = 6
 
 
 def plot_a_prescriptions(
-        a_prescriptions=A_PRESCRIPTIONS,
-        k_range=K_RANGE,
-        valence_space=VALENCE_SPACE,
-        v0=V0, hw=HW,
-        nshell=N_SHELL,
-        t_tuples=list([(T_CC, T_CV, T_VV)]),
-        n_component=N_COMPONENT,
-        incl_1body=INCLUDE_1BODY,
-        incl_2body=INCLUDE_2BODY,
-        use_latex=LATEX,
-        savedir=SAVEDIR,
-        datafile_savedir=DATA_FILE_SAVEDIR,
-        ni_fn=NI_FN,
-        title='Toy model ground state energy error',
+        a_prescriptions=A_PRESCRIPTIONS, k_range=K_RANGE,
+        nshell=N_SHELL, n_component=N_COMPONENT, valence_space=VALENCE_SPACE,
+        v0=V0, hw=HW, t_tuples=list([(T_CC, T_CV, T_VV)]), ni_fn=NI_FN,
+        incl_1body=INCLUDE_1BODY, incl_2body=INCLUDE_2BODY,
+        savedir=SAVEDIR, datafile_savedir=DATA_FILE_SAVEDIR,
         savename='fig_{presc}_{ttup}_{nsh}_{v0}_{hw}',
-        legend_size=LEGEND_SIZE,
-        label='{t:9}, {a}',
+        title='Toy model ground state energy error',
+        legend_size=LEGEND_SIZE, label='{t:9}, {a}',
         get_label_kwargs=lambda p, i: {'t': 'T_cv = ' + str(p[3]['t_cv']),
-                                       'a': p[3]['presc']}
+                                       'a': p[3]['presc']},
+        use_latex=LATEX,
         ):
     """For each A-prescription, plot the difference between the energy based on
     the effective Hamiltonian generated from the A prescription and the energy
     based on the exact Hamiltonian.
     Note: k represents the actual mass number (i.e. the number of ones in the
     state vector), while a represents that used in the Hamiltonian
-    :param ni_fn:
-    :param incl_2body:
-    :param incl_1body:
-    :param legend_size: legend sizing object, based on the definition in
-    imsrg_mass_plots project
-    :param savename: the template filename with which to save the plots
-    :param savedir: the directory in which the plots are to be saved
-    :param n_component: number of components of the system
-    (2 ==> protons + neutrons)
-    :param use_latex: format the plot labels with TeX
-    :param t_vv: valence-valence interaction term
-    :param t_cv: core-valence interaction term
-    :param t_cc: core-core interaction term
-    :param a_prescriptions: A list of functions that take an actual mass
-    number and produce the first three A values from it
-    :param k_range: The range of ACTUAL mass numbers for which to evaluate the
+
+    :param a_prescriptions: List of functions that take an actual mass
+    number and produce the first three Aeff values from it
+    :param k_range: Range of ACTUAL mass numbers for which to evaluate the
     energy difference.
-    :param valence_space: The range of values over which to evaluate the
+    :param nshell: Major harmonic oscillator shell
+    :param n_component: Number of components of the system
+    (2 ==> protons + neutrons)
+    :param valence_space: Range of values over which to evaluate the
     effective Hamiltonian
     :param v0: v0
     :param hw: hw
+    :param t_tuples: List of 3-tuples specifying the range of core-core,
+    core-valence, and valence-valence interaction terms to address
+    :param ni_fn: Function that gives the n_i value
+    :param incl_1body: Whether to include 1-body term
+    :param incl_2body: Whether to include 2-body terms
+    :param savedir: Directory in which the plots are to be saved
+    :param datafile_savedir: Directory in which to write a data file
+    representing the plot. (If None, will not write file)
+    :param savename: Template filename with which to save the plots
+    :param title: Title of the plot
+    :param legend_size: Legend sizing object, based on the definition in
+    imsrg_mass_plots project
+    :param label: Label string template
+    :param get_label_kwargs: Function plot -> label format kwargs
+    :param use_latex: format the plot labels with TeX
     """
     plots = list()
     for ap in a_prescriptions:
