@@ -64,7 +64,7 @@ def get_tbme(aeff, e0, spe, out_fname, he6_fname, a_prescription=None):
     write_lines = list()
     if a_prescription is not None and (
                     a_prescription[0] != aeff or a_prescription[1] != aeff):
-        write_lines.append(print_header(a_prescription, e0, spe, '%s'))
+        write_lines.append(print_header(str(a_prescription), e0, spe, '%s'))
     else:
         write_lines.append(print_header(aeff, e0, spe))
     if he6_fname is not None:
