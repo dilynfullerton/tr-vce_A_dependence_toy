@@ -1,25 +1,21 @@
 #!/usr/bin/python
 from __future__ import division
-from os import getcwd, path, walk, mkdir, link, chdir, symlink, remove, unlink
-from shutil import copyfile
+from os import getcwd, path, walk, mkdir, chdir, symlink, remove
 from subprocess import call
 from FGetSmallerInteraction import run as truncate_interaction
 from FdoVCE import run as vce_calculation
-
 import re
-import glob
 
 # CONSTANTS
 Z_NAME_MAP = {
-    1: 'h_', 2: 'he',
-    3: 'li', 4: 'be', 5: 'b_', 6: 'c_', 7: 'n_', 8: 'o_', 9: 'f_', 10: 'ne',
-    11: 'na', 12: 'mg', 13: 'al', 14: 'si', 15: 'p_', 16: 's_', 17: 'cl', 18: 'ar',
-    19: 'k_', 20: 'ca'
+    1: 'h_', 2: 'he', 3: 'li', 4: 'be', 5: 'b_', 6: 'c_', 7: 'n_', 8: 'o_',
+    9: 'f_', 10: 'ne', 11: 'na', 12: 'mg', 13: 'al', 14: 'si', 15: 'p_',
+    16: 's_', 17: 'cl', 18: 'ar', 19: 'k_', 20: 'ca'
 }
 ALT_NAME = '%d-'
 PATH_MAIN = getcwd()
 PATH_TEMPLATES = path.join(PATH_MAIN, 'templates')
-PATH_RESULTS = path.join(PATH_MAIN,'results')
+PATH_RESULTS = path.join(PATH_MAIN, 'results')
 DIR_NUC = '%s%d_%d'  # name, A, Aeff
 DIR_VCE = 'vce_presc%s'  # A prescription
 FNAME_VCE = 'Aeff%d.int'  # Aeff
@@ -36,18 +32,23 @@ NHW = 6
 N1 = 15
 N2 = 6
 
+
 # FUNCTIONS
 def generating_a_values(nshell):
     """Based on the given major harmonic oscillator shell, gets the 3
        A values that are used to generate the effective Hamiltonian
+       :param nshell: major oscillator shell
     """
     a0 = int((nshell+2)*(nshell+1)*nshell/3 * 2)
     return a0, a0+1, a0+2
 
 
-
 def get_name(z, z_name_map=Z_NAME_MAP, alt_name=ALT_NAME):
-    """Given the proton number, return the short element name"""
+    """Given the proton number, return the short element name
+    :param z: number of protons
+    :param z_name_map: map from proton number to abbreviated name
+    :param alt_name: alternate name format if z not in z_name_map
+    """
     if z in z_name_map:
         return z_name_map[z]
     else:
@@ -55,7 +56,15 @@ def get_name(z, z_name_map=Z_NAME_MAP, alt_name=ALT_NAME):
 
 
 def make_base_directories(a_values, a_prescription, results_path, dir_nuc):
-    """Makes directories for first 3 a values if they do not exist yet"""
+    """Makes directories for first 3 a values if they do not exist yet
+    :param a_values: Values of A for which directories are made.
+    Example: If in nshell1, would make directories for He4,5,6
+    :param a_prescription: Aeff prescription for VCE expansion
+    :param results_path: Path to the directory into which these base
+    directories are put
+    :param dir_nuc: The directory name template which accepts one string and
+    two integers as format parameters. (Name, A, Aeff)
+    """
     if not path.exists(results_path):
         call(['ls', '~/NCSM'])
         mkdir(results_path)
@@ -74,6 +83,17 @@ def make_mfdp_file(z, a, aeff, nhw, n1, n2, path_elt,
     """Reads the mfdp file from path_temp 
        and rewrites it into path_elt in accordance
        with the given z, a, aeff, nhw, n1, n2, and outfile name
+       :param z: Proton number
+       :param a: Mass number
+       :param aeff: Effective mass number for interaction
+       :param nhw: Something something something dark side
+       :param n1: Something something something dark side
+       :param n2: Something something something dark side
+       :param path_elt: The path to the directory into which the mfdp file is
+       to be put
+       :param outfile_name: The name of the written mfdp file
+       :param path_temp: The path to the template directory
+       :param mfdp_name: The name of the mfdp file
     """
     temp_mfdp_path = path.join(path_temp, mfdp_name)
     mfdp_path = path.join(path_elt, mfdp_name)
@@ -118,6 +138,13 @@ def make_trdens_file(z, a, aeff,
                      trdens_name=FNAME_TRDENS):
     """Reads the trdens.in file from path_temp and rewrites it 
        into path_elt in accordance with the given z, a
+       :param z: The proton number
+       :param a: The mass number
+       :param aeff: The effective mass number (to specify the interaction)
+       :param nuc_dir: The directory name template
+       :param path_results: The path to the results directory
+       :param path_temp: The path to the templates directory
+       :param trdens_name: The name of the trdens file in the templates dir
     """
     src = path.join(path_temp, trdens_name)
     nuc_dir = nuc_dir % (get_name(z), a, aeff)

@@ -20,10 +20,11 @@ from plotting import plot_the_plots
 from constants import LEGEND_SIZE
 
 A_PRESCRIPTIONS = [
-    # exact,
-    # custom(16, 17, 18),
+    exact,
+    custom(16, 17, 18),
+    custom(18, 18, 18),
     # custom(19.25066421,  19.11085927,  17.88211487),   # T2 = -1
-    custom(4, 5, 6),
+    # custom(4, 5, 6),
     # custom(6, 6, 6),
     # custom(6.81052543, 7.16905406, 7.56813846),         # T2 = [-5,0]
     # custom(1., 7.11366579, 7.51313418),                 # T2 = [-5,0], no1b
@@ -34,7 +35,7 @@ A_PRESCRIPTIONS = [
     # custom(6.80793461, 7.1641873, 7.56355624),          # T2 = [-10,0]
     # custom(6.79278718, 7.1414551, 7.54129819),          # T2 = [-20,0]
     ]
-N_SHELL = 1
+N_SHELL = 2
 N_COMPONENT = 2
 K0 = int((N_SHELL+2) * (N_SHELL+1) * N_SHELL/3 * N_COMPONENT)
 KMAX = int((N_SHELL+3) * (N_SHELL+2) * (N_SHELL+1)/3 * N_COMPONENT)
@@ -226,10 +227,10 @@ def permutations_with_replacement(iterable, r):
         perms.extend(permutations(c, r))
     return set(perms)
 
-plot_a_prescriptions(
-    t_tuples=[(T_CC, t, T_VV) for t in range(-1, 2)])
+# plot_a_prescriptions(
+#     t_tuples=[(T_CC, t, T_VV) for t in range(-1, 2)])
 
-# plot_a_prescriptions()
+plot_a_prescriptions()
 
 # for tt2 in np.linspace(-1.0, 0.0, 21):
 #     plot_a_prescriptions(t_cv=tt2)

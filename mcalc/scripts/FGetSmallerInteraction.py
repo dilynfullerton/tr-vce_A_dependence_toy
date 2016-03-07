@@ -13,10 +13,10 @@ from sys import argv
 from os import path
 
 
-def GetN(indx):
+def get_n(indx):
     n = 0
     while (n+1)*(n+2)/2 < indx: 
-	n+=1
+        n += 1
     return n
 
 
@@ -29,27 +29,26 @@ def run(fname, n1, n2, f_out_name=None):
             return 0
     f = open(fname)
     
-    line=f.readline()
+    line = f.readline()
     ldat = line.split()
-    ntbme_old,n1_old,n2_old = [int(x) for x in ldat[:3]]
-    hw,Atbme = [float(x) for x in ldat[3:]]
-    
+    hw, a_tbme = [float(x) for x in ldat[3:]]
+
     index_max = (n1+1)*(n1+2)/2
     
     next_lines = list()
     ntbme = 0
     for line in f:
         ldat = line.split()
-        a,b,c,d,J,T = [ int(x) for x in ldat[:6] ]
-        if a>index_max or b>index_max or c>index_max or d>index_max: 
+        a, b, c, d, j, t = [int(x) for x in ldat[:6]]
+        if a > index_max or b > index_max or c > index_max or d > index_max:
             continue
-        if GetN(a)+GetN(b) > n2 or GetN(c)+GetN(d) > n2: 
+        if get_n(a)+get_n(b) > n2 or get_n(c)+get_n(d) > n2:
             continue
         next_lines.append(line.rstrip('\n'))
         ntbme += 1
     
-    s = '%d  %d  %d  %.4f  %.4f' % (ntbme,n1,n2,hw,Atbme)
-    next_lines.insert(0,s)
+    s = '%d  %d  %d  %.4f  %.4f' % (ntbme, n1, n2, hw, a_tbme)
+    next_lines.insert(0, s)
     f.close()
     
     if f_out_name is not None:
@@ -65,10 +64,10 @@ def run(fname, n1, n2, f_out_name=None):
 
 
 if len(argv) >= 4:
-    fname = argv[1]
-    n1,n2 = [int(x) for x in argv[2:4]]
+    fname0 = argv[1]
+    n1_0, n2_0 = [int(x) for x in argv[2:4]]
     if len(argv) >= 5:
-        f_out_name = argv[4]
+        f_out_name0 = argv[4]
     else:
-        f_out_name = None
-    run(fname=fname, n1=n1, n2=n2, f_out_name=f_out_name)
+        f_out_name0 = None
+    run(fname=fname0, n1=n1_0, n2=n2_0, f_out_name=f_out_name0)
