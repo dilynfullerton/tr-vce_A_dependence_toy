@@ -53,7 +53,9 @@ def get_n_i_fn(n_component):
     return _n_i
 
 
+# noinspection PyUnusedLocal
 def get_n_i_fn0(n_component):
+    # noinspection PyUnusedLocal
     def _n_i(i):
         return 0
     return _n_i

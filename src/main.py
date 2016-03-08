@@ -21,11 +21,11 @@ from constants import LEGEND_SIZE
 
 A_PRESCRIPTIONS = [
     exact,
-    custom(16, 17, 18),
-    custom(18, 18, 18),
+    # custom(16, 17, 18),
+    # custom(18, 18, 18),
     # custom(19.25066421,  19.11085927,  17.88211487),   # T2 = -1
-    # custom(4, 5, 6),
-    # custom(6, 6, 6),
+    custom(4, 5, 6),
+    custom(6, 6, 6),
     # custom(6.81052543, 7.16905406, 7.56813846),         # T2 = [-5,0]
     # custom(1., 7.11366579, 7.51313418),                 # T2 = [-5,0], no1b
     # custom(4.17371637, 4.94074871, 5.80477268),         # T2 = -0.5
@@ -35,14 +35,14 @@ A_PRESCRIPTIONS = [
     # custom(6.80793461, 7.1641873, 7.56355624),          # T2 = [-10,0]
     # custom(6.79278718, 7.1414551, 7.54129819),          # T2 = [-20,0]
     ]
-N_SHELL = 2
+N_SHELL = 1
 N_COMPONENT = 2
 K0 = int((N_SHELL+2) * (N_SHELL+1) * N_SHELL/3 * N_COMPONENT)
 KMAX = int((N_SHELL+3) * (N_SHELL+2) * (N_SHELL+1)/3 * N_COMPONENT)
 K_RANGE = range(K0, KMAX+1)
 VALENCE_SPACE = range(K0+1, KMAX+1)
 NI_FN = n_i
-INCLUDE_1BODY = True
+INCLUDE_1BODY = False
 INCLUDE_2BODY = True
 HW = 1.0
 V0 = 1.0
@@ -174,9 +174,9 @@ def e_eff_error_array(a_prescription, k_range, valence_space, n_component,
     return y_array
 
 
-def e_eff_error_arrays(a_prescription, params_range):
+def e_eff_error_arrays(a_prescription, params):
     list_of_y_array = list()
-    for params in params_range:
+    for params in params:
         list_of_y_array.append(e_eff_error_array(a_prescription, *params))
     return np.concatenate(tuple(list_of_y_array))
 
@@ -228,20 +228,20 @@ def permutations_with_replacement(iterable, r):
 # plot_a_prescriptions(
 #     t_tuples=[(T_CC, t, T_VV) for t in range(-1, 2)])
 
-plot_a_prescriptions()
+# plot_a_prescriptions()
 
 # for tt2 in np.linspace(-1.0, 0.0, 21):
 #     plot_a_prescriptions(t_cv=tt2)
 plt.show()
 #
-# params_range = list()
-# # for t2 in np.linspace(-5.0, 0.0, 11):
-# for t2 in [-1]:
-#     params_range.append((K_RANGE, VALENCE_SPACE, N_COMPONENT,
-#                          V0, HW, T_CC, t2, T_VV, NI_FN,
-#                          INCLUDE_1BODY, INCLUDE_2BODY))
-# res = leastsq(func=e_eff_error_arrays,
-#               x0=np.array([1, 1, 1]),
-#               args=(params_range,),
-#               full_output=False)
-# print(res)
+params_range = list()
+# for t2 in np.linspace(-5.0, 0.0, 11):
+for t2 in [0.001]:
+    params_range.append((K_RANGE, VALENCE_SPACE, N_COMPONENT,
+                         V0, HW, T_CC, t2, T_VV, NI_FN,
+                         INCLUDE_1BODY, INCLUDE_2BODY))
+res = leastsq(func=e_eff_error_arrays,
+              x0=np.array([1, 1, 1]),
+              args=(params_range,),
+              full_output=False)
+print(res)
