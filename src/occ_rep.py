@@ -40,13 +40,13 @@ class FermionOccupationNumber:
             elif self.occ != other.occ:
                 raise CannotAddOccupationNumbersException(
                     'Cannot add occupation states {} and {}'
-                    ''.format(self, other))
+                    ''.format(self, other)
+                )
             else:
                 return FermionOccupationNumber(
-                    n_max=self.n_max,
-                    a=self.a,
-                    occupied=self.occ,
-                    scalar=self.scalar + other.scalar)
+                    n_max=self.n_max, a=self.a, occupied=self.occ,
+                    scalar=self.scalar + other.scalar
+                )
         else:
             raise CannotAddOccupationNumbersException(
                 'Cannot add occupation state {} to {}'
@@ -62,10 +62,10 @@ class FermionOccupationNumber:
         return self.__rmul__(other)
 
     def __rmul__(self, other):
-        return FermionOccupationNumber(n_max=self.n_max,
-                                       a=self.a,
-                                       occupied=self.occ,
-                                       scalar=self.scalar * other)
+        return FermionOccupationNumber(
+            n_max=self.n_max, a=self.a, occupied=self.occ,
+            scalar=self.scalar * other
+        )
 
     def __str__(self):
         s = self.scalar
@@ -100,40 +100,36 @@ class FermionOccupationNumber:
         if i > len(self):
             raise ModelSpaceTooSmallException(
                 'Cannot create a particle in state i = {}. Model space is '
-                'limited to i in \{1, 2, ...{}\}.'.format(i, len(self.occ)))
+                'limited to i in \{1, 2, ...{}\}.'.format(i, len(self.occ))
+            )
         elif self[i] == 1:
-            return FermionOccupationNumber(n_max=self.n_max,
-                                           a=self.a,
-                                           occupied=self.occ,
-                                           scalar=0)
+            return FermionOccupationNumber(
+                n_max=self.n_max, a=self.a, occupied=self.occ, scalar=0)
         elif self[i] == 0:
             next_occ = list(self.occ)
             next_occ[i] = 1
             return FermionOccupationNumber(
-                n_max=self.n_max,
-                a=self.a + 1,
-                occupied=next_occ,
-                scalar=self.scalar * self._phase_factor(i))
+                n_max=self.n_max, a=self.a + 1, occupied=next_occ,
+                scalar=self.scalar * self._phase_factor(i)
+            )
 
     def annihilate(self, i):
         if i > len(self):
             raise ModelSpaceTooSmallException(
                 ('Cannot create a particle in state i = {}.'.format(i) +
                  ' Model space is limited to i in {1, 2, ...' +
-                 '{}'.format(len(self))) + '}.')
+                 '{}'.format(len(self))) + '}.'
+            )
         elif self[i] == 0:
-            return FermionOccupationNumber(n_max=self.n_max,
-                                           a=self.a,
-                                           occupied=self.occ,
-                                           scalar=0)
+            return FermionOccupationNumber(
+                n_max=self.n_max, a=self.a, occupied=self.occ, scalar=0)
         elif self[i] == 1:
             next_occ = list(self.occ)
             next_occ[i] = 0
             return FermionOccupationNumber(
-                n_max=self.n_max,
-                a=self.a - 1,
-                occupied=next_occ,
-                scalar=self.scalar * self._phase_factor(i))
+                n_max=self.n_max, a=self.a - 1, occupied=next_occ,
+                scalar=self.scalar * self._phase_factor(i)
+            )
 
 
 class CannotAddOccupationNumbersException(Exception):

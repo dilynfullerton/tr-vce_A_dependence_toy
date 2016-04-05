@@ -65,11 +65,11 @@ class HamiltonianToy(_Hamiltonian):
     """Toy model Hamiltonian to be applied to occupation state vectors
     """
 
-    def __init__(self, a, v0, hw, valence_space, t_i=_t_i, t_ij=_t_ij,
-                 n_i=get_n_i_fn, n_component=1,
-                 t_cc=0, t_cv=0, t_vv=0,
-                 include1body=True,
-                 include2body=True):
+    def __init__(
+            self, a, v0, hw, valence_space, t_i=_t_i, t_ij=_t_ij,
+            n_i=get_n_i_fn, n_component=1, t_cc=0, t_cv=0, t_vv=0,
+            include1body=True, include2body=True
+    ):
         self.a = a
         self.v0 = v0
         self.hw = hw
@@ -98,11 +98,11 @@ class HamiltonianToy(_Hamiltonian):
                 ai_ = ai.adjoint()
                 aj = FermionAnnihilationOperator(j)
                 aj_ = aj.adjoint()
-                tij = self._t_ij(i=i, j=j,
-                                 t_core=self._t_cc,
-                                 t_mix=self._t_cv,
-                                 t_val=self._t_vv,
-                                 valence_space=self.valence)
+                tij = self._t_ij(
+                    i=i, j=j,
+                    t_core=self._t_cc, t_mix=self._t_cv, t_val=self._t_vv,
+                    valence_space=self.valence
+                )
                 s += ((self.v0 - tij / self.a) * ai_(aj_(aj(ai(state)))))
         return s
 
@@ -150,8 +150,10 @@ def custom_a_prescription(a, b, c):
     # noinspection PyUnusedLocal
     def get_a_custom(x):
         tup = (a, b, c)
-        return tup + ('A_eff = ({:.2f}, {:.2f}, {:.2f})'.format(*tup),
-                      '$A_{\mathrm{eff}} =' +
-                      ' ({:.2f}, {:.2f}, {:.2f})$'.format(*tup),)
+        return tup + (
+            'A_eff = ({:.2f}, {:.2f}, {:.2f})'.format(*tup),
+            '$A_{\mathrm{eff}} =' +
+            ' ({:.2f}, {:.2f}, {:.2f})$'.format(*tup),
+        )
 
     return get_a_custom

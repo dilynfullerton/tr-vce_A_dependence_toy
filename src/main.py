@@ -13,7 +13,7 @@ from toy import get_a_exact as exact
 from toy import custom_a_prescription as custom
 from toy import get_n_i_fn as n_i
 
-path.extend([b'../../imsrg_mass_plots/src'])
+path.extend([b'../../tr-a_dependence_plots/src'])
 # noinspection PyPep8,PyUnresolvedReferences
 from plotting import plot_the_plots
 # noinspection PyPep8,PyUnresolvedReferences
@@ -69,7 +69,7 @@ def plot_a_prescriptions(
         get_label_kwargs=lambda p, i: {'t': 'T_cv = ' + str(p[3]['t_cv']),
                                        'a': p[3]['presc']},
         use_latex=LATEX,
-        ):
+):
     """For each A-prescription, plot the difference between the energy based on
     the effective Hamiltonian generated from the A prescription and the energy
     based on the exact Hamiltonian.
@@ -118,7 +118,8 @@ def plot_a_prescriptions(
                     ap=ap, k=k, v0=v0, hw=hw, ni_fn=ni_fn,
                     valence_space=valence_space, n_component=n_component,
                     t_cc=t_cc, t_cv=t_cv, t_vv=t_vv,
-                    incl_1body=incl_1body, incl_2body=incl_2body)
+                    incl_1body=incl_1body, incl_2body=incl_2body
+                )
                 x.append(k)
                 if hw != 0:
                     y.append(err / hw)
@@ -135,11 +136,8 @@ def plot_a_prescriptions(
                   '\\hbar\\omega$')
     ap_names = [str(ap(0)[3].split('=')[1].strip())
                 for ap in a_prescriptions]
-    savename = savename.format(presc=ap_names,
-                               ttup=t_tuples,
-                               nsh=nshell,
-                               v0=v0,
-                               hw=hw)
+    savename = savename.format(
+        presc=ap_names, ttup=t_tuples, nsh=nshell, v0=v0, hw=hw)
     return plot_the_plots(
         plots,
         sort_key=lambda plot: plot[3]['presc'],
@@ -160,9 +158,10 @@ def plot_a_prescriptions(
     )
 
 
-def e_eff_error_array(a_prescription, k_range, valence_space, n_component,
-                      v0, hw, t_core, t_mix, t_val, ni_fn,
-                      incl_1body, incl_2body):
+def e_eff_error_array(
+        a_prescription, k_range, valence_space, n_component,
+        v0, hw, t_core, t_mix, t_val, ni_fn, incl_1body, incl_2body
+):
     x_array = np.array(k_range)
     y_array = np.empty(shape=x_array.shape)
     for x, i in zip(x_array, range(len(x_array))):
@@ -170,7 +169,8 @@ def e_eff_error_array(a_prescription, k_range, valence_space, n_component,
         y_array[i] = _get_e_eff_error(
             ap=ap, k=x, valence_space=valence_space, n_component=n_component,
             v0=v0, hw=hw, t_cc=t_core, t_cv=t_mix, t_vv=t_val, ni_fn=ni_fn,
-            incl_1body=incl_1body, incl_2body=incl_2body)
+            incl_1body=incl_1body, incl_2body=incl_2body
+        )
     return y_array
 
 
@@ -181,9 +181,10 @@ def e_eff_error_arrays(a_prescription, params):
     return np.concatenate(tuple(list_of_y_array))
 
 
-def _get_e_eff_error(ap, k, valence_space, n_component, v0, hw,
-                     t_cc, t_cv, t_vv, ni_fn,
-                     incl_1body, incl_2body):
+def _get_e_eff_error(
+        ap, k, valence_space, n_component, v0, hw, t_cc, t_cv, t_vv, ni_fn,
+        incl_1body, incl_2body
+):
     a2, a3, a4 = ap(k)[:3]
 
     h2 = H_ex(a=a2, v0=v0, hw=hw, n_i=ni_fn,
@@ -228,20 +229,20 @@ def permutations_with_replacement(iterable, r):
 # plot_a_prescriptions(
 #     t_tuples=[(T_CC, t, T_VV) for t in range(-1, 2)])
 
-# plot_a_prescriptions()
+plot_a_prescriptions()
 
 # for tt2 in np.linspace(-1.0, 0.0, 21):
 #     plot_a_prescriptions(t_cv=tt2)
 plt.show()
 #
-params_range = list()
-# for t2 in np.linspace(-5.0, 0.0, 11):
-for t2 in [0.001]:
-    params_range.append((K_RANGE, VALENCE_SPACE, N_COMPONENT,
-                         V0, HW, T_CC, t2, T_VV, NI_FN,
-                         INCLUDE_1BODY, INCLUDE_2BODY))
-res = leastsq(func=e_eff_error_arrays,
-              x0=np.array([1, 1, 1]),
-              args=(params_range,),
-              full_output=False)
-print(res)
+# params_range = list()
+# # for t2 in np.linspace(-5.0, 0.0, 11):
+# for t2 in [0.001]:
+#     params_range.append((K_RANGE, VALENCE_SPACE, N_COMPONENT,
+#                          V0, HW, T_CC, t2, T_VV, NI_FN,
+#                          INCLUDE_1BODY, INCLUDE_2BODY))
+# res = leastsq(func=e_eff_error_arrays,
+#               x0=np.array([1, 1, 1]),
+#               args=(params_range,),
+#               full_output=False)
+# print(res)
