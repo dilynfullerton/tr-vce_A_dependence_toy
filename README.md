@@ -1,5 +1,6 @@
 # tr-vce_A_dependence_toy
-Coming soon: MORE information about this stuff. Oooh weee! I can't wait
+
+_Coming soon_: MORE information about this stuff. Oooh weee! I can't wait
 
 ### Overview
 ---
