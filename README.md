@@ -17,6 +17,7 @@ The following are required for using the full functionality of this program:
   * scipy
   * matplotlib
   * numpy
+* [tr-A_dependence_plots](https://github.com/dilynfullerton/tr-A_dependence_plots)
 
 #### Recommended:
 All of the above requirements and more are included in the Anaconda
