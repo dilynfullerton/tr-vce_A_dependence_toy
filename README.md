@@ -28,12 +28,21 @@ Both python and SciPy are included in the Anaconda distribution.
 ---
 The following should be done to prepare for usage:
 
-1. Clone this repository to the desired directory.
+1. Clone this repository to the desired directory.  
 
     ```bash
-    git clone https://github.com/dilynfullerton/tr-vce_A_dependence_toy.git
+    git clone
+    https://github.com/dilynfullerton/tr-vce_A_dependence_toy.git
+	~/.../workdir/vce_a_dependence_toy
     ```
-2. Get familiar with the data defintions used.
+2. Clone my `tr-A_dependence_plots` into the same parent directory.  
+
+    ```bash
+	git clone
+	https://github.com/dilynfullerton/tr-A_dependence_plots.git
+	~/.../workdir/a_dependence_plots
+    ```
+3. Get familiar with the data defintions used.
 
 ### Data definitions
 ---
