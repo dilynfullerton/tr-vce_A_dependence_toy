@@ -20,8 +20,7 @@ The following are required for using the full functionality of this program:
 * [tr-A_dependence_plots](https://github.com/dilynfullerton/tr-A_dependence_plots)
 
 #### Recommended:
-All of the above requirements and more are included in the Anaconda
-distribution.
+Both python and SciPy are included in the Anaconda distribution.
 
 * [Anaconda](https://www.continuum.io/downloads)
 
