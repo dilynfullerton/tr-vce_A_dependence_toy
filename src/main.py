@@ -17,6 +17,7 @@ from toy import get_n_i_fn as get_ni_fn
 path.extend([b'../../tr-a_dependence_plots/src'])
 # noinspection PyPep8,PyUnresolvedReferences
 from plotting import save_plot_figure
+# noinspection PyPep8,PyUnresolvedReferences
 from plotting import save_plot_data_file
 # noinspection PyPep8,PyUnresolvedReferences
 from constants import LEGEND_SIZE
