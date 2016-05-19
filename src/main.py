@@ -88,8 +88,8 @@ def _get_e_eff_error(
     :param t_cc: core-core t term for toy model Hamiltonian
     :param t_cv: core-valence t term for toy model Hamiltonian
     :param t_vv: valence-valence t term for toy model Hamiltonian
-    :param get_n_i_fn: function that when given ncomponent, returns the appropriate
-    function from i -> Ni. Thus this function has the form
+    :param get_n_i_fn: function that when given ncomponent, returns the
+    appropriate function from i -> Ni. Thus this function has the form
         ni_fn: ncomponent -> (ni: i -> n)
     :param incl_1body: if true, include 1-body term
     :param incl_2body: if true, include 2-body term
@@ -248,8 +248,8 @@ def e_eff_error_array(
         ap = custom(*a_prescription)
         y_array[i] = _get_e_eff_error(
             ap=ap, k=x, valence_space=valence_space, n_component=n_component,
-            v0=v0, hw=hw, t_cc=t_cc, t_cv=t_cv, t_vv=t_vv, get_n_i_fn=get_n_i_fn,
-            incl_1body=incl_1body, incl_2body=incl_2body
+            v0=v0, hw=hw, t_cc=t_cc, t_cv=t_cv, t_vv=t_vv,
+            get_n_i_fn=get_n_i_fn, incl_1body=incl_1body, incl_2body=incl_2body
         )
     return y_array
 
