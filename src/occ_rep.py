@@ -6,7 +6,6 @@ from __future__ import unicode_literals
 class FermionOccupationNumber:
     """A representation of an OccupationNumber state vector
     """
-
     def __init__(self, n_max=0, a=0, occupied=None, scalar=1):
         self.n_max = n_max
         self.scalar = scalar
@@ -155,7 +154,6 @@ class FermionCreationOperator(_FermionCAOperator):
     """A creation operator, which may be applied to an occupation state vector
     in an appropriately sized model space
     """
-
     def __init__(self, i):
         super(FermionCreationOperator,
               self).__init__(i, FermionAnnihilationOperator)
@@ -168,7 +166,6 @@ class FermionAnnihilationOperator(_FermionCAOperator):
     """An annihilation operator, which may be applied to an occupation state vector
     in an appropriately sized model space
     """
-
     def __init__(self, i):
         super(FermionAnnihilationOperator,
               self).__init__(i, FermionCreationOperator)
